@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MarketResearchResult } from '../types';
-import { FileText, MonitorPlay, Download, Mail, FileSpreadsheet, File as FileIcon, Printer, Check, Copy } from 'lucide-react';
+import { FileText, MonitorPlay, Download, Mail, FileSpreadsheet, Printer } from 'lucide-react';
 
 interface ExportToolbarProps {
   data: MarketResearchResult;
@@ -8,7 +8,6 @@ interface ExportToolbarProps {
 }
 
 const ExportToolbar: React.FC<ExportToolbarProps> = ({ data, niche }) => {
-  const [downloadOpen, setDownloadOpen] = useState(false);
   const [copiedStatus, setCopiedStatus] = useState<string | null>(null);
 
   // --- Helpers to format data ---
@@ -79,19 +78,13 @@ const ExportToolbar: React.FC<ExportToolbarProps> = ({ data, niche }) => {
   };
 
   const handlePrintPDF = () => {
-    // Expand details before printing? 
-    // Ideally, we'd rely on CSS print media to ensure content is visible, 
-    // but window.print() is the most reliable "Save as PDF" for web apps without backend.
     window.print();
-    setDownloadOpen(false);
   };
 
   const handleEmail = () => {
     const subject = encodeURIComponent(`Relatório de Mercado: ${niche}`);
     const body = encodeURIComponent(generateReportText());
-    // Mailto has a limit, but it's the most direct client-side method
     if (body.length > 1800) {
-        // If too long, just copy to clipboard and open gmail
         navigator.clipboard.writeText(generateReportText());
         setCopiedStatus('email');
         setTimeout(() => setCopiedStatus(null), 3000);
@@ -113,7 +106,7 @@ const ExportToolbar: React.FC<ExportToolbarProps> = ({ data, niche }) => {
         <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20">
             <FileText size={18} className="text-blue-500" />
         </div>
-        <span className="hidden md:inline">Google Docs</span>
+        <span className="hidden md:inline">Docs</span>
         {copiedStatus === 'docs' && (
             <span className="absolute -bottom-8 left-0 text-[10px] bg-green-500 text-white px-2 py-1 rounded w-32">Copiado! Cole no Doc.</span>
         )}
@@ -128,7 +121,7 @@ const ExportToolbar: React.FC<ExportToolbarProps> = ({ data, niche }) => {
         <div className="p-2 bg-yellow-500/10 rounded-lg group-hover:bg-yellow-500/20">
             <MonitorPlay size={18} className="text-yellow-500" />
         </div>
-        <span className="hidden md:inline">Google Slides</span>
+        <span className="hidden md:inline">Slides</span>
         {copiedStatus === 'slides' && (
             <span className="absolute -bottom-8 left-0 text-[10px] bg-green-500 text-white px-2 py-1 rounded w-32">Copiado! Cole no Slide.</span>
         )}
@@ -136,45 +129,39 @@ const ExportToolbar: React.FC<ExportToolbarProps> = ({ data, niche }) => {
 
       <div className="h-8 w-px bg-slate-700 mx-2 hidden md:block"></div>
 
-      {/* Download Dropdown */}
-      <div className="relative">
-        <button 
-            onClick={() => setDownloadOpen(!downloadOpen)}
-            className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors"
-        >
-            <div className="p-2 bg-cyan-500/10 rounded-lg">
-                <Download size={18} className="text-cyan-500" />
-            </div>
-            <span>Baixar</span>
-        </button>
+      {/* CSV Export */}
+      <button 
+          onClick={generateCSV}
+          className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors"
+          title="Baixar planilha CSV"
+      >
+          <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20">
+              <FileSpreadsheet size={18} className="text-emerald-500" />
+          </div>
+          <span>CSV</span>
+      </button>
 
-        {downloadOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
-                <button 
-                    onClick={handlePrintPDF}
-                    className="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 flex items-center gap-2"
-                >
-                    <Printer size={14} /> PDF (Imprimir)
-                </button>
-                <button 
-                    onClick={() => { generateCSV(); setDownloadOpen(false); }}
-                    className="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 flex items-center gap-2"
-                >
-                    <FileSpreadsheet size={14} /> Arquivo CSV
-                </button>
-            </div>
-        )}
-      </div>
+      {/* PDF Export */}
+      <button 
+          onClick={handlePrintPDF}
+          className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-red-400 transition-colors"
+          title="Salvar como PDF"
+      >
+          <div className="p-2 bg-red-500/10 rounded-lg group-hover:bg-red-500/20">
+              <Printer size={18} className="text-red-500" />
+          </div>
+          <span>PDF</span>
+      </button>
 
       <div className="h-8 w-px bg-slate-700 mx-2 hidden md:block"></div>
 
       {/* Email */}
       <button 
         onClick={handleEmail}
-        className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-red-400 transition-colors relative"
+        className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors relative"
       >
-        <div className="p-2 bg-red-500/10 rounded-lg">
-            <Mail size={18} className="text-red-500" />
+        <div className="p-2 bg-indigo-500/10 rounded-lg group-hover:bg-indigo-500/20">
+            <Mail size={18} className="text-indigo-500" />
         </div>
         <span className="hidden md:inline">Gmail</span>
         {copiedStatus === 'email' && (
