@@ -16,6 +16,23 @@
           -ms-overflow-style: none;
           scrollbar-width: none;
       }
+      
+      @media print {
+        @page { margin: 1cm; size: portrait; }
+        body { background: white !important; color: black !important; }
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+        /* Ensure contrast for printed text */
+        p, h1, h2, h3, h4, span, div { color: black !important; text-shadow: none !important; }
+        /* Remove dark mode backgrounds */
+        .bg-slate-900, .bg-slate-950, .bg-slate-800, .bg-gradient-to-r, .bg-gradient-to-br {
+          background: none !important;
+          background-image: none !important;
+          border-color: #ccc !important;
+        }
+        /* Expand hidden sections */
+        .px-6.pb-8.pt-2.border-t { display: block !important; height: auto !important; opacity: 1 !important; visibility: visible !important; }
+      }
     </style>
   <script type="importmap">
 {
